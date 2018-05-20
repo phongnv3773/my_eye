@@ -20,7 +20,7 @@ print(TEST_DIR)
 # and only the first 1000 from the test set
 # REMOVE [0:2000] and [0:1000] when running locally
 train_image_file_names = [TRAIN_DIR+i for i in os.listdir(TRAIN_DIR)][0:2000] 
-test_image_file_names = [TEST_DIR+i for i in os.listdir(TEST_DIR)][0:2000]
+test_image_file_names = [TEST_DIR+i for i in os.listdir(TEST_DIR)][0:707]
 
 
 # Slow, yet simple implementation with tensorflow
@@ -75,6 +75,8 @@ del all_images
 
 # WIDTH=500
 # HEIGHT=500
+# WIDTH=256
+# HEIGHT=256
 WIDTH=128
 HEIGHT=128
 # WIDTH=64
@@ -130,7 +132,7 @@ prediction = add_layer(xs1,128*128*3 , 2,  activation_function=tf.nn.softmax)
 # the error between prediction and real data
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys * tf.log(prediction),
                                               reduction_indices=[1]))       # loss
-train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+train_step = tf.train.GradientDescentOptimizer(0.3).minimize(cross_entropy)
 
 sess = tf.Session()
 # important step
