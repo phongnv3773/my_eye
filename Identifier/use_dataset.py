@@ -9,9 +9,9 @@ from numpy import array
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # TRAIN_DIR = dir_path + '/input/train/'
-TRAIN_DIR = dir_path + '/input/check_train/'
+TRAIN_DIR = dir_path + '/check_train/'
 print(TRAIN_DIR)
-TEST_DIR = dir_path+ '/input/check_test/'
+TEST_DIR = dir_path+ '/check_test/'
 print(TEST_DIR)
 
 
@@ -20,7 +20,7 @@ print(TEST_DIR)
 # and only the first 1000 from the test set
 # REMOVE [0:2000] and [0:1000] when running locally
 train_image_file_names = [TRAIN_DIR+i for i in os.listdir(TRAIN_DIR)][0:2000] 
-test_image_file_names = [TEST_DIR+i for i in os.listdir(TEST_DIR)][0:2000]
+test_image_file_names = [TEST_DIR+i for i in os.listdir(TEST_DIR)][0:707]
 
 
 # Slow, yet simple implementation with tensorflow
@@ -75,8 +75,12 @@ del all_images
 
 # WIDTH=500
 # HEIGHT=500
-WIDTH=64
-HEIGHT=64
+# WIDTH=256
+# HEIGHT=256
+WIDTH=128
+HEIGHT=128
+# WIDTH=64
+# HEIGHT=64
 resize_func = lambda image: tf.image.resize_image_with_crop_or_pad(image, HEIGHT, WIDTH)
 
 
@@ -118,17 +122,17 @@ def compute_accuracy(v_xs, v_ys):
     return result
 
 # define placeholder for inputs to network
-xs = tf.placeholder(tf.float32, shape=[None, 64 , 64 , 3]) # 
-xs1 = tf.reshape(xs, shape=[-1, 64 * 64 * 3])
+xs = tf.placeholder(tf.float32, shape=[None, 128 , 128 , 3]) # 
+xs1 = tf.reshape(xs, shape=[-1, 128 * 128 * 3])
 ys = tf.placeholder(tf.float32, shape=[None, 2])
 
 # add output layer
-prediction = add_layer(xs1,64*64*3 , 2,  activation_function=tf.nn.softmax)
+prediction = add_layer(xs1,128*128*3 , 2,  activation_function=tf.nn.softmax)
 
 # the error between prediction and real data
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys * tf.log(prediction),
                                               reduction_indices=[1]))       # loss
-train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+train_step = tf.train.GradientDescentOptimizer(0.3).minimize(cross_entropy)
 
 sess = tf.Session()
 # important step
@@ -145,8 +149,8 @@ for i in range(1000):
     # images, labels = iterator.get_next()
     sess.run(train_step, feed_dict={xs: processed_train_images, ys: labels})
     y_pre = sess.run(prediction, feed_dict={xs: processed_train_images})
-    # if i % 50 == 0:
-    #     print(compute_accuracy(processed_test_images, labels_tests))
+    if i % 50 == 0:
+        print(compute_accuracy(processed_test_images, labels_tests))
     
 
 
